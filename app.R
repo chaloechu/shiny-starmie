@@ -7,57 +7,7 @@ library(gapminder)
 library(scales)
 
 #importing world development indicators
-WDIData <- read_csv("data/WDIData.csv")
-
-#wrangling data
-WDIDataTest <- WDIData |>
-  pivot_longer(
-    cols = -c(
-      "Country Name",
-      "Country Code",
-      "Indicator Name",
-      "Indicator Code"
-    ),
-    names_to = "year",
-    names_transform = parse_number,
-    values_to = "values"
-  ) |>
-  
-  #snake_case and factoring data
-  rename(indicator_id = "Indicator Code",
-         country_name = "Country Name") |>
-  mutate(country_name = as.factor(country_name),
-         indicator_id = as.factor(indicator_id)) |>
-  select(country_name, indicator_id, year, values) |>
-  
-  #filtering for gdp per capita
-  filter(indicator_id == 'NY.GDP.PCAP.CD') |>
-  
-  
-  #converting year column to get it ready for gganimate
-  mutate(year = as.integer(year)) |>
-  filter(
-    country_name %in% c(
-      "Canada",
-      "France",
-      "Germany",
-      "Italy",
-      "Japan",
-      "United States",
-      "United Kingdom"
-    )
-  ) |>
-  rename(value = "values") |>
-  drop_na(year) |>
-  mutate(
-    value = replace_na(value, 0)
-  ) |>
-  group_by(year) |>
-  top_n(n = 7, wt = value) |>
-  mutate(
-    rank = rank(-value)
-  ) |>
-  ungroup()
+WDIDataTest <- read_csv("data/WDIData.csv")
 
 rerender <- TRUE
 
